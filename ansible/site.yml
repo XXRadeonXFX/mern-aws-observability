@@ -1,0 +1,12 @@
+---
+- name: Configure MongoDB Server
+  hosts: db
+  become: yes
+  roles:
+    - db
+
+- name: Configure Web Server
+  hosts: web
+  become: yes
+  roles:
+    - web

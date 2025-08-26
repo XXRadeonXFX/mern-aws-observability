@@ -1,0 +1,24 @@
+---
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: yes
+
+- name: Clone TravelMemory repo
+  git:
+    repo: "https://github.com/UnpredictablePrashant/TravelMemory"
+    dest: /home/ubuntu/TravelMemory
+    version: main
+
+- name: Install backend dependencies
+  npm:
+    path: /home/ubuntu/TravelMemory/backend
+    state: present
+
+- name: Install frontend dependencies
+  npm:
+    path: /home/ubuntu/TravelMemory/frontend
+    state: present
