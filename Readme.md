@@ -42,6 +42,8 @@
    ```bash
    terraform apply -auto-approve
    ```
+![tf-apply](./screenshots/tf-apply.png)
+
 
    ✅ This creates **two EC2 instances**:
 
@@ -126,4 +128,5 @@ Hello World!
 * After these steps, both MongoDB and the backend are deployed successfully.
 
 ---
+
 
