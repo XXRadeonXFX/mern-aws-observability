@@ -64,7 +64,10 @@ ansible-playbook -i inventory/hosts.ini site.yml
 ```
 
 📸 Example Run:
-![ansible-apply](./screenshots/ansible-apply.png)
+
+![ansible-ping-pong](./screenshots/ansible-ping-pong.png)
+
+![ansible-apply](./screenshots/ansible-apply-host-ini.png)
 
 This playbook:
 
@@ -224,3 +227,4 @@ Hello World!
 * Observability enabled with **Prometheus + Node Exporter + MongoDB Exporter + Grafana**
 
 ---
+
