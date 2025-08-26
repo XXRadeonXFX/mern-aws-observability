@@ -63,6 +63,7 @@ Run the following command:
 ```bash
 ansible-playbook -i inventory/hosts.ini site.yml
 ```
+![ansible-ping-pong](./screenshots/ansible-ping-pong.png)
 
 This step:
 
@@ -128,5 +129,6 @@ Hello World!
 * After these steps, both MongoDB and the backend are deployed successfully.
 
 ---
+
 
 
