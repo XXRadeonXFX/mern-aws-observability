@@ -1,0 +1,104 @@
+---
+# =========================
+# Install & Configure Node Exporter
+# =========================
+- name: Download Node Exporter archive
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+    dest: /tmp/node_exporter.tar.gz
+
+- name: Extract Node Exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /usr/local/
+    remote_src: yes
+
+- name: Move Node Exporter binary
+  command: mv /usr/local/node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin/node_exporter
+  args:
+    creates: /usr/local/bin/node_exporter
+
+- name: Create node_exporter user
+  user:
+    name: nodeusr
+    shell: /sbin/nologin
+
+- name: Create systemd service for Node Exporter
+  copy:
+    dest: /etc/systemd/system/node_exporter.service
+    content: |
+      [Unit]
+      Description=Node Exporter
+      After=network.target
+
+      [Service]
+      User=nodeusr
+      ExecStart=/usr/local/bin/node_exporter
+
+      [Install]
+      WantedBy=default.target
+
+- name: Reload systemd and start Node Exporter
+  systemd:
+    name: node_exporter
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+# =========================
+# Install & Configure Prometheus
+# =========================
+- name: Download Prometheus archive
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.53.0/prometheus-2.53.0.linux-amd64.tar.gz
+    dest: /tmp/prometheus.tar.gz
+
+- name: Extract Prometheus
+  unarchive:
+    src: /tmp/prometheus.tar.gz
+    dest: /usr/local/
+    remote_src: yes
+
+- name: Create Prometheus directory
+  file:
+    path: /usr/local/prometheus
+    state: directory
+    mode: '0755'
+
+- name: Move Prometheus binaries
+  command: mv /usr/local/prometheus-2.53.0.linux-amd64/{{ item }} /usr/local/prometheus/
+  args:
+    creates: /usr/local/prometheus/{{ item }}
+  with_items:
+    - prometheus
+    - promtool
+
+- name: Deploy prometheus.yml with dynamic scrape configs
+  template:
+    src: prometheus.yml.j2
+    dest: /usr/local/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create systemd service for Prometheus
+  copy:
+    dest: /etc/systemd/system/prometheus.service
+    content: |
+      [Unit]
+      Description=Prometheus
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/local/prometheus/prometheus --config.file=/usr/local/prometheus/prometheus.yml
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd and start Prometheus
+  systemd:
+    name: prometheus
+    enabled: yes
+    state: started
+    daemon_reload: yes

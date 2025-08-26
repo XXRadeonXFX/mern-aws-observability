@@ -4,9 +4,11 @@
   become: yes
   roles:
     - db
+    - node_exporter 
 
 - name: Configure Web Server
   hosts: web
   become: yes
   roles:
     - web
+    - node_exporter 
