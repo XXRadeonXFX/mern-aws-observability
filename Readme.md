@@ -129,6 +129,9 @@ Hello World!
   ```
 * Expected: Prometheus, Node Exporter, MongoDB Exporter should show `UP`.
 
+![prom-targets](./screenshots/prom-targets.png)
+
+
 ### Grafana
 
 * Service check:
@@ -187,6 +190,8 @@ Hello World!
   ```
 
 ---
+![grafana](./screenshots/grafana.png)
+
 
 ## 7. 📌 Order of Execution
 
@@ -227,4 +232,5 @@ Hello World!
 * Observability enabled with **Prometheus + Node Exporter + MongoDB Exporter + Grafana**
 
 ---
+
 
