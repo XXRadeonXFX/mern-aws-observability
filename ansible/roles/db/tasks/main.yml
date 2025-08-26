@@ -18,7 +18,14 @@
     name: mongodb-org
     state: present
 
-- name: Ensure MongoDB is started
+- name: Allow MongoDB to listen on all interfaces (0.0.0.0)
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^  bindIp:'
+    line: '  bindIp: 0.0.0.0'
+  notify: Restart MongoDB
+
+- name: Ensure MongoDB is enabled and started
   service:
     name: mongod
     state: started

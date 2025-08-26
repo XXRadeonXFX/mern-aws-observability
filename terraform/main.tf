@@ -11,6 +11,18 @@ data "aws_subnets" "default" {
   }
 }
 
+resource "local_file" "ansible_inventory" {
+  content = <<EOT
+[web]
+web1 ansible_host=${aws_instance.web.public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/radeonxfx/prince-pair-x-2.pem
+
+[db]
+db1 ansible_host=${aws_instance.db.public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/radeonxfx/prince-pair-x-2.pem
+EOT
+
+  filename = "${path.module}/../ansible/inventory/hosts.ini"
+}
+
 # DB Instance
 resource "aws_instance" "db" {
   ami                         = var.ami_id

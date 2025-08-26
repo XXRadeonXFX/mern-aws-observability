@@ -12,6 +12,9 @@
     repo: "https://github.com/UnpredictablePrashant/TravelMemory"
     dest: /home/ubuntu/TravelMemory
     version: main
+    force: yes
+  become: yes
+  become_user: ubuntu
 
 - name: Install backend dependencies
   npm:
@@ -22,3 +25,38 @@
   npm:
     path: /home/ubuntu/TravelMemory/frontend
     state: present
+
+- name: Create .env file for backend
+  copy:
+    dest: /home/ubuntu/TravelMemory/backend/.env
+    content: |
+      MONGO_URI=mongodb://{{ hostvars['db1']['ansible_host'] }}:27017
+      PORT=3001
+  owner: ubuntu
+  group: ubuntu
+  mode: '0644'
+
+- name: Create backend service for Node.js
+  copy:
+    dest: /etc/systemd/system/travelmemory.service
+    content: |
+      [Unit]
+      Description=TravelMemory Backend
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/bin/node /home/ubuntu/TravelMemory/backend/index.js
+      WorkingDirectory=/home/ubuntu/TravelMemory/backend
+      Restart=always
+      User=ubuntu
+      EnvironmentFile=/home/ubuntu/TravelMemory/backend/.env
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Reload systemd
+
+- name: Enable and start TravelMemory backend
+  systemd:
+    name: travelmemory
+    enabled: yes
+    state: started
