@@ -30,11 +30,11 @@
   copy:
     dest: /home/ubuntu/TravelMemory/backend/.env
     content: |
-      MONGO_URI=mongodb://{{ hostvars['db1']['ansible_host'] }}:27017
+      MONGO_URI=mongodb://{{ hostvars['db1']['ansible_host'] }}:27017/travelmemory
       PORT=3001
-  owner: ubuntu
-  group: ubuntu
-  mode: '0644'
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
 
 - name: Create backend service for Node.js
   copy:
