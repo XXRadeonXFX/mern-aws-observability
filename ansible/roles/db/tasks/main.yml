@@ -1,12 +1,25 @@
 ---
+- name: Add MongoDB APT key
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-6.0.asc
+    state: present
+
+- name: Add MongoDB repository (use jammy repo for Ubuntu 24.04 too)
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
+    state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
 - name: Install MongoDB
   apt:
-    name: mongodb
+    name: mongodb-org
     state: present
-    update_cache: yes
 
 - name: Ensure MongoDB is started
   service:
-    name: mongodb
+    name: mongod
     state: started
     enabled: yes
