@@ -1,32 +1,37 @@
----
-- name: Add MongoDB APT key
-  apt_key:
-    url: https://www.mongodb.org/static/pgp/server-6.0.asc
-    state: present
+- name: Download MongoDB Exporter
+  get_url:
+    url: https://github.com/percona/mongodb_exporter/releases/download/v0.40.0/mongodb_exporter-0.40.0.linux-amd64.tar.gz
+    dest: /tmp/mongodb_exporter.tar.gz
 
-- name: Add MongoDB repository (use jammy repo for Ubuntu 24.04 too)
-  apt_repository:
-    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
-    state: present
+- name: Extract MongoDB Exporter
+  unarchive:
+    src: /tmp/mongodb_exporter.tar.gz
+    dest: /usr/local/
+    remote_src: yes
 
-- name: Update apt cache
-  apt:
-    update_cache: yes
+- name: Move MongoDB Exporter binary
+  command: mv /usr/local/mongodb_exporter-0.40.0.linux-amd64/mongodb_exporter /usr/local/bin/mongodb_exporter
+  args:
+    creates: /usr/local/bin/mongodb_exporter
 
-- name: Install MongoDB
-  apt:
-    name: mongodb-org
-    state: present
+- name: Create systemd service for MongoDB Exporter
+  copy:
+    dest: /etc/systemd/system/mongodb_exporter.service
+    content: |
+      [Unit]
+      Description=MongoDB Exporter
+      After=network.target
 
-- name: Allow MongoDB to listen on all interfaces (0.0.0.0)
-  lineinfile:
-    path: /etc/mongod.conf
-    regexp: '^  bindIp:'
-    line: '  bindIp: 0.0.0.0'
-  notify: Restart MongoDB
+      [Service]
+      ExecStart=/usr/local/bin/mongodb_exporter --mongodb.uri=mongodb://localhost:27017
+      Restart=always
 
-- name: Ensure MongoDB is enabled and started
-  service:
-    name: mongod
-    state: started
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd and start MongoDB Exporter
+  systemd:
+    name: mongodb_exporter
     enabled: yes
+    state: started
+    daemon_reload: yes
