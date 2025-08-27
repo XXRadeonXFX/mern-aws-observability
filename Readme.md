@@ -4,6 +4,8 @@
 
 ---
 
+![ansible-ping-pong](./screenshots/archietecture.png)
+
 ## 1. 🚀 Prerequisites
 
 Before starting, ensure you have:
@@ -232,5 +234,6 @@ Hello World!
 * Observability enabled with **Prometheus + Node Exporter + MongoDB Exporter + Grafana**
 
 ---
+
 
 
